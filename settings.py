@@ -10,4 +10,4 @@ URL = config(
 )
 FILAMENT_CSS_PATH = config('FILAMENT_CSS_PATH', default='div.product_details>a')
 
-FILAMENTS_DAT = config('FILAMENTS_DAT', default=PROJECT_DIR / 'filaments.dat', cast=Path)
+FILAMENTS_DAT = config('FILAMENTS_DAT', default=PROJECT_DIR / 'filaments.csv', cast=Path)

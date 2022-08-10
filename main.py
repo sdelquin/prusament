@@ -1,27 +1,32 @@
 import typer
 
-from prusament.core import get_filaments, load_filaments
+from prusament.core import Handler
 
 app = typer.Typer(add_completion=False)
 
 
 @app.command()
 def list(
-    new: bool = typer.Option(
-        False, '--new', '-w', show_default=False, help='List only new filaments.'
+    changed: bool = typer.Option(
+        False, '--changed', '-c', show_default=False, help='List only changed filaments.'
     ),
 ):
     '''
     List available Prusa filaments.
     '''
-    if new:
-        old_filaments = load_filaments()
+    h = Handler()
+    if changed:
+        added_filaments, removed_filaments = h.get_changed_filaments()
+        print('ADDED FILAMENTS')
+        for filament, url in added_filaments.items():
+            print(f'{filament}: {url}')
+        print('REMOVED FILAMENTS')
+        for filament, url in removed_filaments.items():
+            print(f'{filament}: {url}')
     else:
-        old_filaments = set()
-    current_filaments = set(get_filaments())
-    new_filaments = current_filaments - old_filaments
-    for filament in new_filaments:
-        print(filament)
+        filaments = h.get_filaments_from_tinermaq()
+        for filament, url in filaments.items():
+            print(f'{filament}: {url}')
 
 
 @app.command()
@@ -29,9 +34,9 @@ def save():
     '''
     Save available Prusa filaments.
     '''
-    with open('filaments.dat', 'w') as f:
-        for filament in get_filaments():
-            f.write(filament + '\n')
+    h = Handler()
+    h.get_filaments_from_tinermaq()
+    h.save_filaments_to_store()
 
 
 if __name__ == "__main__":
