@@ -10,6 +10,7 @@ from rich.markdown import Markdown
 from user_agent import generate_user_agent
 
 import settings
+from prusament.utils import init_sendgrid, render_message
 
 
 class Filament:
@@ -93,3 +94,33 @@ class Handler:
             console.print(f'{heading}', style='bold underline')
         for filament in filaments:
             console.print(Markdown(filament.as_markdown()))
+
+    @staticmethod
+    def notify_availability(filaments: list[Filament], to_email=settings.TO_EMAIL_ADDRESS):
+        logger.info('Notifying filaments availability')
+        message = render_message(
+            dict(filaments=filaments), settings.AVAILABILITY_MSG_TEMPLATE
+        )
+        sg_handler = init_sendgrid()
+        sg_handler.send(
+            to=to_email, subject='Available Prusament at Tinermaq', msg=message, html=True
+        )
+
+    @staticmethod
+    def notify_updates(
+        added_filaments: list[Filament],
+        removed_filaments: list[Filament],
+        to_email=settings.TO_EMAIL_ADDRESS,
+    ):
+        logger.info('Notifying updates on filaments availability')
+        message = render_message(
+            dict(added_filaments=added_filaments, removed_filaments=removed_filaments),
+            settings.UPDATES_MSG_TEMPLATE,
+        )
+        sg_handler = init_sendgrid()
+        sg_handler.send(
+            to=to_email,
+            subject='Updates about Prusament at Tinermaq',
+            msg=message,
+            html=True,
+        )

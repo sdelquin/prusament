@@ -18,7 +18,7 @@ def list(
     ),
 ):
     '''
-    List available Prusa filaments.
+    List available prusament filaments at Tinermaq.
     '''
     logger.setLevel(logzero.ERROR if quiet else logzero.DEBUG)
 
@@ -39,11 +39,35 @@ def list(
 @app.command()
 def save():
     '''
-    Save available Prusa filaments.
+    Save available prusament filaments at Tinermaq.
     '''
     h = Handler()
     h.get_filaments_from_tinermaq()
     h.save_filaments_to_store()
+
+
+@app.command()
+def notify(
+    updates: bool = typer.Option(
+        False, '--updates', '-u', show_default=False, help='Notify filament updates.'
+    )
+):
+    '''
+    Notify available prusament filaments at Tinermaq.
+    '''
+    h = Handler()
+    if updates:
+        added_filaments, removed_filaments = h.get_filament_updates()
+        if added_filaments or removed_filaments:
+            h.notify_updates(added_filaments, removed_filaments)
+        else:
+            logger.warning('Avoid notification since no updates were found')
+    else:
+        filaments = h.get_filaments_from_tinermaq()
+        if filaments:
+            h.notify_availability(filaments)
+        else:
+            logger.warning('Avoid notification since no filaments were found')
 
 
 if __name__ == "__main__":
