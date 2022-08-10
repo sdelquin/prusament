@@ -1,22 +1,24 @@
 import typer
 
 from prusament.core import Handler
+from prusament.utils import init_logger
 
 app = typer.Typer(add_completion=False)
+logger = init_logger()
 
 
 @app.command()
 def list(
-    changed: bool = typer.Option(
-        False, '--changed', '-c', show_default=False, help='List only changed filaments.'
+    updates: bool = typer.Option(
+        False, '--updates', '-u', show_default=False, help='List filament updates.'
     ),
 ):
     '''
     List available Prusa filaments.
     '''
     h = Handler()
-    if changed:
-        added_filaments, removed_filaments = h.get_changed_filaments()
+    if updates:
+        added_filaments, removed_filaments = h.get_filament_updates()
         print('ADDED FILAMENTS')
         for filament, url in added_filaments.items():
             print(f'{filament}: {url}')
