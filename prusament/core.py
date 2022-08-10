@@ -5,6 +5,8 @@ from typing import Iterable
 import requests
 from bs4 import BeautifulSoup
 from logzero import logger
+from rich.console import Console
+from rich.markdown import Markdown
 from user_agent import generate_user_agent
 
 import settings
@@ -23,6 +25,9 @@ class Filament:
 
     def as_iterable(self) -> Iterable:
         return self.name, self.url
+
+    def as_markdown(self):
+        return f'[{self.name}]({self.url})'
 
 
 class Handler:
@@ -80,3 +85,11 @@ class Handler:
                 removed_filaments.append(filament)
 
         return added_filaments, removed_filaments
+
+    @staticmethod
+    def print_filaments_as_markdown(filaments: list[Filament], heading: str = ''):
+        console = Console()
+        if heading:
+            console.print(f'{heading}', style='bold underline')
+        for filament in filaments:
+            console.print(Markdown(filament.as_markdown()))

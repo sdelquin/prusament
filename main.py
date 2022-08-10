@@ -1,3 +1,4 @@
+import logzero
 import typer
 
 from prusament.core import Handler
@@ -9,6 +10,9 @@ logger = init_logger()
 
 @app.command()
 def list(
+    quiet: bool = typer.Option(
+        False, '--quiet', '-q', show_default=False, help='Run in quite mode.'
+    ),
     updates: bool = typer.Option(
         False, '--updates', '-u', show_default=False, help='List filament updates.'
     ),
@@ -16,19 +20,20 @@ def list(
     '''
     List available Prusa filaments.
     '''
+    logger.setLevel(logzero.ERROR if quiet else logzero.DEBUG)
+
     h = Handler()
     if updates:
         added_filaments, removed_filaments = h.get_filament_updates()
-        print('ADDED FILAMENTS')
-        for filament in added_filaments:
-            print(filament)
-        print('REMOVED FILAMENTS')
-        for filament in removed_filaments:
-            print(filament)
+        if added_filaments:
+            h.print_filaments_as_markdown(added_filaments, '✅ Added filaments')
+        if removed_filaments:
+            h.print_filaments_as_markdown(removed_filaments, '❌ Removed filaments')
     else:
         filaments = h.get_filaments_from_tinermaq()
-        for filament in filaments:
-            print(filament)
+        h.print_filaments_as_markdown(
+            filaments, '📦 Available prusament filaments at tinermaq website'
+        )
 
 
 @app.command()
