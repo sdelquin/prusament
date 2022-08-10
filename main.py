@@ -20,15 +20,15 @@ def list(
     if updates:
         added_filaments, removed_filaments = h.get_filament_updates()
         print('ADDED FILAMENTS')
-        for filament, url in added_filaments.items():
-            print(f'{filament}: {url}')
+        for filament in added_filaments:
+            print(filament)
         print('REMOVED FILAMENTS')
-        for filament, url in removed_filaments.items():
-            print(f'{filament}: {url}')
+        for filament in removed_filaments:
+            print(filament)
     else:
         filaments = h.get_filaments_from_tinermaq()
-        for filament, url in filaments.items():
-            print(f'{filament}: {url}')
+        for filament in filaments:
+            print(filament)
 
 
 @app.command()
