@@ -13,3 +13,5 @@
 - {{ filament.as_markdown() }}
 {% endfor %}
 {% endif %}
+
+{% include 'footer.md' %}

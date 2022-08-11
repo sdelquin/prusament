@@ -99,7 +99,7 @@ class Handler:
     def notify_availability(filaments: list[Filament], to_email=settings.TO_EMAIL_ADDRESS):
         logger.info('Notifying filaments availability')
         message = render_message(
-            dict(filaments=filaments), settings.AVAILABILITY_MSG_TEMPLATE
+            dict(filaments=filaments, url=settings.URL), settings.AVAILABILITY_MSG_TEMPLATE
         )
         sg_handler = init_sendgrid()
         sg_handler.send(
@@ -114,7 +114,11 @@ class Handler:
     ):
         logger.info('Notifying updates on filaments availability')
         message = render_message(
-            dict(added_filaments=added_filaments, removed_filaments=removed_filaments),
+            dict(
+                added_filaments=added_filaments,
+                removed_filaments=removed_filaments,
+                url=settings.URL,
+            ),
             settings.UPDATES_MSG_TEMPLATE,
         )
         sg_handler = init_sendgrid()
