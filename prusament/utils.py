@@ -3,8 +3,7 @@ from pathlib import Path
 
 import jinja2
 import logzero
-import markdown
-from sgw.core import SendGrid
+from sendgrify import SendGrid
 
 import settings
 
@@ -41,11 +40,10 @@ def init_jinja():
     return env
 
 
-def render_message(args: dict, template_name: Path):
+def render_message(args: dict, template_name: Path) -> str:
     jinja_env = init_jinja()
     template = jinja_env.get_template(template_name)
-    rendered_template = template.render(**args)
-    return markdown.markdown(rendered_template)
+    return template.render(**args)
 
 
 def init_sendgrid(

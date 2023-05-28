@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import csv
 from pathlib import Path
 from typing import Iterable
@@ -21,8 +23,10 @@ class Filament:
     def __str__(self) -> str:
         return f'{self.name}: {self.url}'
 
-    def __eq__(self, other: object) -> bool:
-        return self.name == other.name
+    def __eq__(self, other: Filament | object) -> bool:
+        if isinstance(other, Filament):
+            return self.name == other.name
+        return False
 
     def as_iterable(self) -> Iterable:
         return self.name, self.url
@@ -36,7 +40,7 @@ class Handler:
         self.store = store
         self.filaments = []
 
-    def get_filaments_from_tinermaq(self, force_request: bool = False) -> dict:
+    def get_filaments_from_tinermaq(self, force_request: bool = False) -> list[str]:
         logger.info('Getting available filaments from tinermaq website')
         if self.filaments and not force_request:
             return self.filaments
@@ -55,7 +59,7 @@ class Handler:
             for filament in self.filaments:
                 csvwriter.writerow(filament.as_iterable())
 
-    def load_filaments_from_store(self) -> dict:
+    def load_filaments_from_store(self) -> list[Filament]:
         logger.info(f'Loading filaments from {self.store}')
         filaments = []
         try:
@@ -68,7 +72,7 @@ class Handler:
             logger.warning(f'File {self.store} not found')
         return filaments
 
-    def get_filament_updates(self) -> tuple[dict, dict]:
+    def get_filament_updates(self) -> tuple[list[str], list[str]]:
         logger.info('Getting filament updates from tinermaq website')
         tinermaq_filaments = self.get_filaments_from_tinermaq()
         stored_filaments = self.load_filaments_from_store()
@@ -103,7 +107,7 @@ class Handler:
         )
         sg_handler = init_sendgrid()
         sg_handler.send(
-            to=to_email, subject='Available Prusament at Tinermaq', msg=message, html=True
+            to=to_email, subject='Available Prusament at Tinermaq', msg=message, as_markdown=True
         )
 
     @staticmethod
@@ -126,5 +130,5 @@ class Handler:
             to=to_email,
             subject='Updates about Prusament at Tinermaq',
             msg=message,
-            html=True,
+            as_markdown=True,
         )
