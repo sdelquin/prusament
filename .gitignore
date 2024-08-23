@@ -1,3 +1,4 @@
+.venv
 *.pyc
 __pycache__
 .mypy_cache
@@ -5,4 +6,3 @@ __pycache__
 filaments.csv
 *.log
 .env
-.python-version
